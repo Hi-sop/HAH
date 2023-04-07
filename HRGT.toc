@@ -1,0 +1,13 @@
+## Interface: 100002
+## Title: Hisop_Raid Gold Tool
+## Author: Hisop
+## Notes: Raid Acution Gold Tool
+## Version: 1.0
+## SavedVariablesPerCharacter: HRGT_DB
+
+Libs\AceGUI-3.0_SFX-Widgets.xml
+Libs\embeds.xml
+HRGT.xml
+
+Core.lua
+TradeHistory.lua
