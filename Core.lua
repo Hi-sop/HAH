@@ -1,6 +1,9 @@
 HRGT = LibStub("AceAddon-3.0"):NewAddon("HRGT", "AceConsole-3.0", "AceEvent-3.0")
 GUI = LibStub("AceGUI-3.0")
 
+local LHindex = C_LootHistory.GetNumItems() + 1
+local statistics_container
+
 local defaults = {
 	char = {
 		['*'] = {
@@ -53,7 +56,7 @@ function HRGT:MainPanel()
 		OnAccept = function()
 			if UnitIsGroupLeader("player") then
 				SendChatMessage(
-					"1넴 : "..comma_value(gold["test"]).." + ".."2넴 : "..comma_value(gold["named2"]).." + "..
+					"1넴 : "..comma_value(gold["named1"]).." + ".."2넴 : "..comma_value(gold["named2"]).." + "..
 					"3넴 : "..comma_value(gold["named3"]).." + ".."4넴 : "..comma_value(gold["named4"]).." + "..
 					"5넴 : "..comma_value(gold["named5"]).." + ".."6넴 : "..comma_value(gold["named6"]).." + "..
 					"7넴 : "..comma_value(gold["named7"]).." + ".."8넴 : "..comma_value(gold["named8"]).." = "..comma_value(total), 
@@ -61,7 +64,7 @@ function HRGT:MainPanel()
 				SendChatMessage("총 "..comma_value(total).." / 분배인원 "..headcount.."명 = "..comma_value(total / headcount), "RAID")
 			else
 				SendChatMessage(
-				"1넴 : "..comma_value(gold["test"]).." + ".."2넴 : "..comma_value(gold["named2"]).." + "..
+				"1넴 : "..comma_value(gold["named1"]).." + ".."2넴 : "..comma_value(gold["named2"]).." + "..
 				"3넴 : "..comma_value(gold["named3"]).." + ".."4넴 : "..comma_value(gold["named4"]).." + "..
 				"5넴 : "..comma_value(gold["named5"]).." + ".."6넴 : "..comma_value(gold["named6"]).." + "..
 				"7넴 : "..comma_value(gold["named7"]).." + ".."8넴 : "..comma_value(gold["named8"]).." = "..comma_value(total), 
@@ -115,6 +118,7 @@ function HRGT:MainPanel()
 	
 	local function statistics(container)
 		container:ReleaseChildren()
+		statistics_container = container
 		total = 0
 
 		local header1 = GUI:Create("SFX-Header-II")
@@ -128,7 +132,7 @@ function HRGT:MainPanel()
 
 		header1:SetText("1넴 : 에라노그")
 		container:AddChild(header1)
-		calculator("test", container)
+		calculator("named1", container)
 		
 		header2:SetText("2넴 : 테로스")
 		container:AddChild(header2)
@@ -296,8 +300,7 @@ function HRGT:RemotePanel()
 					return
 				end
 				if UnitIsGroupLeader("player") then
-					--테스트 종료시 레이드로 바꿀것 "RAID"
-					SendChatMessage(adr.itemTooltip.." 가격 설정 : "..comma_value(text), "PARTY")
+					SendChatMessage(adr.itemTooltip.." 가격 설정 : "..comma_value(text), "RAID")
 				else
 					HRGT:Print(adr.itemTooltip.." 가격 설정 : "..comma_value(text))
 				end
@@ -319,7 +322,7 @@ function HRGT:RemotePanel()
 	
 	local function SelectGroup(container, event, group)
 		if group == "tab1" then
-			UpdateRemotePanel("test", container, "1넴 : 에라노그")
+			UpdateRemotePanel("named1", container, "1넴 : 에라노그")
 		elseif group == "tab2" then
 			UpdateRemotePanel("named2", container, "2넴 : 테로스")
 		elseif group == "tab3" then
@@ -411,6 +414,9 @@ function HRGT:OnInitialize()
 end
 
 function HRGT:newDB(named, itemName, itemLink, itemTooltip, itemTexture)
+	if named == nil then
+		return
+	end
 
 	function checkOverlap(itemName)
 		local i = 1
@@ -438,9 +444,14 @@ function HRGT:newDB(named, itemName, itemLink, itemTooltip, itemTexture)
 	}
 end
 
-function HRGT:LOOT_ITEM_AVAILABLE(itemTooltip, lootHandle)
-	self:Print(itemTooltip)
-	local itemName, itemLink, _, itemLevel, _, _, _, _, _, itemTexture = GetItemInfo(itemTooltip) 
+function HRGT:LOOT_ITEM_AVAILABLE()
+	local _, itemTooltip = C_LootHistory.GetItem(LHindex)
+	if itemTooltip == nil then
+		return
+	end
+	LHindex = LHindex + 1
+	
+	local itemName, itemLink, _, itemLevel, _, _, _, _, _, itemTexture = GetItemInfo(itemTooltip)
 	local named = HRGT:checkDroptable(itemName)
 	if named == nil then
 		return
@@ -461,21 +472,22 @@ end
 ]]
 
 function HRGT:RAID_INSTANCE_WELCOME(mapname)
-	--if mapname == 현신의금고 추가하기 (현재 정확한 맵 이름 모름)
-	StaticPopupDialogs["resetPopup_INS"] = {
-		text = "HRGT : 모든 데이터를 초기화합니다",
-		button1 = "Yes",
-		button2 = "No",
-		OnAccept = function()
-			local temp = HRGT_DB.minimapPos
-			self.db:ResetDB()
-			HRGT_DB.minimapPos = temp
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-	}
-	StaticPopup_Show("resetPopup_INS")
+	if mapname == "현신의 금고(일반)" or mapname == "현신의 금고(영웅)" or mapname == "현신의 금고(신화)" then
+		StaticPopupDialogs["resetPopup_INS"] = {
+			text = "HRGT : 모든 데이터를 초기화합니다",
+			button1 = "Yes",
+			button2 = "No",
+			OnAccept = function()
+				local temp = HRGT_DB.minimapPos
+				self.db:ResetDB()
+				HRGT_DB.minimapPos = temp
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+		}
+		StaticPopup_Show("resetPopup_INS")
+	end
 end
 
 function HRGT:OnEnable()
