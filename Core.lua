@@ -1,8 +1,7 @@
 HRGT = LibStub("AceAddon-3.0"):NewAddon("HRGT", "AceConsole-3.0", "AceEvent-3.0")
 GUI = LibStub("AceGUI-3.0")
 
-local LHindex = C_LootHistory.GetNumItems() + 1
-local statistics_container
+local LHindex
 
 local defaults = {
 	char = {
@@ -444,13 +443,11 @@ function HRGT:newDB(named, itemName, itemLink, itemTooltip, itemTexture)
 	}
 end
 
-function HRGT:LOOT_ITEM_AVAILABLE()
-	local _, itemTooltip = C_LootHistory.GetItem(LHindex)
+function HRGT:LOOT_HISTORY_AUTO_SHOW(test1, index, test2)
+	local _, itemTooltip = C_LootHistory.GetItem(1)
 	if itemTooltip == nil then
 		return
 	end
-	LHindex = LHindex + 1
-	
 	local itemName, itemLink, _, itemLevel, _, _, _, _, _, itemTexture = GetItemInfo(itemTooltip)
 	local named = HRGT:checkDroptable(itemName)
 	if named == nil then
@@ -491,7 +488,7 @@ function HRGT:RAID_INSTANCE_WELCOME(mapname)
 end
 
 function HRGT:OnEnable()
-	self:RegisterEvent("LOOT_ITEM_AVAILABLE")
+	self:RegisterEvent("LOOT_HISTORY_AUTO_SHOW")
 	self:RegisterEvent("RAID_INSTANCE_WELCOME")
 	--self:RegisterEvent("ENCOUNTER_LOOT_RECEIVED") --oldraid 등에서 동작. 테스트용
 	

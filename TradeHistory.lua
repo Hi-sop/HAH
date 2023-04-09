@@ -31,13 +31,13 @@ function HRGT:checkDroptable(itemName)
 	local named3 = {
 		194300,
 		194301,
-		195483,
 		195484,
 		195485,
 		195486,
 		195487,
 		195488,
-		195489
+		195489,
+		195518
 	}
 
 	local named4 = {
@@ -73,13 +73,13 @@ function HRGT:checkDroptable(itemName)
 	local named6 = {
 		194305,
 		194306,
+		195483,
 		195512,
 		195513,
 		195514,
 		195515,
 		195516,
 		195517,
-		195518,
 		196586,
 		196591,
 		196596,
