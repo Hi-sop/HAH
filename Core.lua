@@ -1,8 +1,6 @@
 HRGT = LibStub("AceAddon-3.0"):NewAddon("HRGT", "AceConsole-3.0", "AceEvent-3.0")
 GUI = LibStub("AceGUI-3.0")
 
-local LHindex
-
 local defaults = {
 	char = {
 		['*'] = {
@@ -29,10 +27,142 @@ function comma_value(n)
 	return left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
 end
 
+function HRGT:calculator(named, container)
+		local frame = GUI:Create("Label")
+		local str = ""
+		local temp = 0
+
+		local i = 1
+		for key, adr in next, self.db.char[named], nil do
+			if 6 < i then
+				break
+			end
+			
+			if i ~= 1 then
+				str = str.."   +   "
+			end
+			str = str..comma_value(adr.price)
+			temp = temp + tonumber(adr.price)	
+			i = i + 1
+		end
+		str = str.."   =   "..comma_value(temp)
+
+		frame:SetText(str)
+		frame:SetFont(STANDARD_TEXT_FONT, 14, "")
+		frame:SetWidth(400)
+		container:AddChild(frame)
+		gold[named] = temp
+		total = total + temp
+	end
+
+function HRGT:statistics(container)
+	container:ReleaseChildren()
+	statistics_container = container
+	total = 0
+
+	local header1 = GUI:Create("SFX-Header-II")
+	local header2 = GUI:Create("SFX-Header-II")
+	local header3 = GUI:Create("SFX-Header-II")
+	local header4 = GUI:Create("SFX-Header-II")
+	local header5 = GUI:Create("SFX-Header-II")
+	local header6 = GUI:Create("SFX-Header-II")
+	local header7 = GUI:Create("SFX-Header-II")
+	local header8 = GUI:Create("SFX-Header-II")
+
+	header1:SetText("1넴 : 에라노그")
+	container:AddChild(header1)
+	HRGT:calculator("named1", container)
+	
+	header2:SetText("2넴 : 테로스")
+	container:AddChild(header2)
+	HRGT:calculator("named2", container)
+	
+	header3:SetText("3넴 : 원시 의회")
+	container:AddChild(header3)
+	HRGT:calculator("named3", container)
+	
+	header4:SetText("4넴 : 세나스")
+	container:AddChild(header4)
+	HRGT:calculator("named4", container)
+	
+	header5:SetText("5넴 : 다테아")
+	container:AddChild(header5)
+	HRGT:calculator("named5", container)
+	
+	header6:SetText("6넴 : 그림토템")
+	container:AddChild(header6)
+	HRGT:calculator("named6", container)
+	
+	header7:SetText("7넴 : 디우르나")
+	container:AddChild(header7)
+	HRGT:calculator("named7", container)
+	
+	header8:SetText("8넴 : 라자게스")
+	container:AddChild(header8)
+	HRGT:calculator("named8", container)
+	
+	local blink = GUI:Create("SFX-Header-II")
+	container:AddChild(blink)
+
+	local totalFrame = GUI:Create("Label")
+	totalFrame:SetText("총 골드 : "..comma_value(total))
+	totalFrame:SetFont(STANDARD_TEXT_FONT, 16, "")
+	totalFrame:SetWidth(400)
+	
+	container:AddChild(totalFrame)
+	
+	local heacountbox = GUI:Create("EditBox")
+	heacountbox:SetWidth(100)
+	heacountbox:SetRelativeWidth(0.3)
+	heacountbox:SetLabel("분배 인원 : "..headcount)
+	heacountbox:SetCallback("OnEnterPressed",
+		function(widget, event, text)
+			if tonumber(text) == nil then
+				return
+			end
+			headcount = tonumber(text)
+			HRGT:statistics(container)
+		end)
+	container:AddChild(heacountbox)
+	
+	local allotment = GUI:Create("Label")
+	allotment:SetText("분배금 : "..comma_value(total / headcount))
+	allotment:SetFont(STANDARD_TEXT_FONT, 16, "")
+	allotment:SetWidth(400)
+	container:AddChild(allotment)
+	
+	local refresh = GUI:Create("Button")
+	refresh:SetText("↻")
+	refresh:SetWidth(50)
+	container:AddChild(refresh)
+	refresh:SetCallback("OnClick",
+	function(widget)
+		HRGT:statistics(container)
+	end)
+	
+	local resetButton = GUI:Create("Button")
+	resetButton:SetText("Reset")
+	resetButton:SetWidth(100)
+	container:AddChild(resetButton)
+	resetButton:SetCallback("OnClick",
+	function(widget)
+		StaticPopup_Show("resetPopup")
+	end)
+
+	local reportButton = GUI:Create("Button")
+	reportButton:SetText("Report")
+	reportButton:SetWidth(100)
+	container:AddChild(reportButton)
+	reportButton:SetCallback("OnClick",
+	function(widget)
+		StaticPopup_Show("reportPopup")
+	end)
+end
+
 function HRGT:MainPanel()
-	local headcount = 1
-	local gold = {}
-	local total = 0
+	headcount = 1
+	gold = {}
+	total = 0
 
 	StaticPopupDialogs["resetPopup"] = {
 		text = "모든 데이터가 초기화됩니다",
@@ -42,6 +172,8 @@ function HRGT:MainPanel()
 			local temp = HRGT_DB.minimapPos
 			self.db:ResetDB()
 			HRGT_DB.minimapPos = temp
+			HRGT:statistics(statistics_container)
+			HRGT:UpdateRemotePanel(remoteinfo.named, remoteinfo.container, remoteinfo.headertex)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -87,141 +219,9 @@ function HRGT:MainPanel()
 	MainPanel:SetLayout("Fill")
 	MainPanel:EnableResize(false)
 	
-	local function calculator(named, container)
-		local frame = GUI:Create("Label")
-		local str = ""
-		local temp = 0
-
-		local i = 1
-		for key, adr in next, self.db.char[named], nil do
-			if 6 < i then
-				break
-			end
-			
-			if i ~= 1 then
-				str = str.."   +   "
-			end
-			str = str..comma_value(adr.price)
-			temp = temp + tonumber(adr.price)	
-			i = i + 1
-		end
-		str = str.."   =   "..comma_value(temp)
-
-		frame:SetText(str)
-		frame:SetFont(STANDARD_TEXT_FONT, 14, "")
-		frame:SetWidth(400)
-		container:AddChild(frame)
-		gold[named] = temp
-		total = total + temp
-	end
-	
-	local function statistics(container)
-		container:ReleaseChildren()
-		statistics_container = container
-		total = 0
-
-		local header1 = GUI:Create("SFX-Header-II")
-		local header2 = GUI:Create("SFX-Header-II")
-		local header3 = GUI:Create("SFX-Header-II")
-		local header4 = GUI:Create("SFX-Header-II")
-		local header5 = GUI:Create("SFX-Header-II")
-		local header6 = GUI:Create("SFX-Header-II")
-		local header7 = GUI:Create("SFX-Header-II")
-		local header8 = GUI:Create("SFX-Header-II")
-
-		header1:SetText("1넴 : 에라노그")
-		container:AddChild(header1)
-		calculator("named1", container)
-		
-		header2:SetText("2넴 : 테로스")
-		container:AddChild(header2)
-		calculator("named2", container)
-		
-		header3:SetText("3넴 : 원시 의회")
-		container:AddChild(header3)
-		calculator("named3", container)
-		
-		header4:SetText("4넴 : 세나스")
-		container:AddChild(header4)
-		calculator("named4", container)
-		
-		header5:SetText("5넴 : 다테아")
-		container:AddChild(header5)
-		calculator("named5", container)
-		
-		header6:SetText("6넴 : 그림토템")
-		container:AddChild(header6)
-		calculator("named6", container)
-		
-		header7:SetText("7넴 : 디우르나")
-		container:AddChild(header7)
-		calculator("named7", container)
-		
-		header8:SetText("8넴 : 라자게스")
-		container:AddChild(header8)
-		calculator("named8", container)
-		
-		local blink = GUI:Create("SFX-Header-II")
-		container:AddChild(blink)
-	
-		local totalFrame = GUI:Create("Label")
-		totalFrame:SetText("총 골드 : "..comma_value(total))
-		totalFrame:SetFont(STANDARD_TEXT_FONT, 16, "")
-		totalFrame:SetWidth(400)
-		
-		container:AddChild(totalFrame)
-		
-		local heacountbox = GUI:Create("EditBox")
-		heacountbox:SetWidth(100)
-		heacountbox:SetRelativeWidth(0.3)
-		heacountbox:SetLabel("분배 인원 : "..headcount)
-		heacountbox:SetCallback("OnEnterPressed",
-			function(widget, event, text)
-				if tonumber(text) == nil then
-					return
-				end
-				headcount = tonumber(text)
-				statistics(container)
-			end)
-		container:AddChild(heacountbox)
-		
-		local allotment = GUI:Create("Label")
-		allotment:SetText("분배금 : "..comma_value(total / headcount))
-		allotment:SetFont(STANDARD_TEXT_FONT, 16, "")
-		allotment:SetWidth(400)
-		container:AddChild(allotment)
-		
-		local refresh = GUI:Create("Button")
-		refresh:SetText("↻")
-		refresh:SetWidth(50)
-		container:AddChild(refresh)
-		refresh:SetCallback("OnClick",
-		function(widget)
-			statistics(container)
-		end)
-		
-		local resetButton = GUI:Create("Button")
-		resetButton:SetText("Reset")
-		resetButton:SetWidth(100)
-		container:AddChild(resetButton)
-		resetButton:SetCallback("OnClick",
-		function(widget)
-			StaticPopup_Show("resetPopup")
-		end)
-
-		local reportButton = GUI:Create("Button")
-		reportButton:SetText("Report")
-		reportButton:SetWidth(100)
-		container:AddChild(reportButton)
-		reportButton:SetCallback("OnClick",
-		function(widget)
-			StaticPopup_Show("reportPopup")
-		end)
-	end
-	
 	local function SelectGroup(container, event, group)
 		if group == "tab1" then
-			statistics(container)
+			HRGT:statistics(container)
 		elseif group == "tab2" then
 			HRGT:TradeHistory(container)
 		end
@@ -240,102 +240,105 @@ function HRGT:MainPanel()
 	return MainPanel
 end
 
-function HRGT:RemotePanel()
-	local texture = {}
-	local editbox = {}
 
-	local function UpdatePrice(named)
-		if self.db.char[named] == nil then
+function HRGT:UpdatePrice(named)
+	if self.db.char[named] == nil then
+		return
+	end
+	local i = 1
+	for key, adr in next, self.db.char[named], nil do
+		if 6 < i then
 			return
 		end
-		local i = 1
-		for key, adr in next, self.db.char[named], nil do
-			if 6 < i then
+		editbox[i]:SetLabel("낙찰가: "..comma_value(adr.price).." ")
+		i = i + 1
+	end
+end
+
+function HRGT:UpdateRemotePanel(named, container, headertex)
+	remoteinfo = {named = named, container = container, headertex = headertex}
+	container:ReleaseChildren()
+	local header = GUI:Create("SFX-Header-II")
+	container:AddChild(header)
+	header:SetText(headertex)
+	
+
+	if self.db.char[named] == nil then
+		return
+	end
+	local i = 1
+	for key, adr in next, self.db.char[named], nil do
+		if 6 < i then
+			break
+		end
+		texture[i] = GUI:Create("Icon")
+		texture[i]:SetImageSize(35, 35)
+		texture[i]:SetRelativeWidth(0.6)
+		texture[i]:SetImage(adr.itemTexture)
+		texture[i]:SetLabel(adr.itemTooltip)
+		
+		texture[i]:SetCallback("OnClick", 
+		function()
+			if UnitIsGroupLeader("player") then
+				SendChatMessage(adr.itemTooltip, "RAID")
+			else
+				SendChatMessage(adr.itemTooltip, "PARTY")
+			end
+		end)
+		container:AddChild(texture[i])
+		
+		editbox[i] = GUI:Create("EditBox")
+		editbox[i]:SetWidth(150)
+		editbox[i]:SetRelativeWidth(0.4)
+		editbox[i]:SetLabel("낙찰가: "..comma_value(adr.price).." ")
+		editbox[i]:SetCallback("OnEnterPressed", 
+		function(widget, event, text)
+			if tonumber(text) == nil then
 				return
 			end
-			editbox[i]:SetLabel("낙찰가: "..comma_value(adr.price).." ")
-			i = i + 1
-		end
-	end
-	
-	local function UpdateRemotePanel(named, container, headertex)
-		container:ReleaseChildren()
-		local header = GUI:Create("SFX-Header-II")
-		container:AddChild(header)
-		header:SetText(headertex)
-		
-	
-		if self.db.char[named] == nil then
-			return
-		end
-		local i = 1
-		for key, adr in next, self.db.char[named], nil do
-			if 6 < i then
-				break
+			if UnitIsGroupLeader("player") then
+				SendChatMessage(adr.itemTooltip.." 가격 설정 : "..comma_value(text), "RAID")
+			else
+				HRGT:Print(adr.itemTooltip.." 가격 설정 : "..comma_value(text))
 			end
-			texture[i] = GUI:Create("Icon")
-			texture[i]:SetImageSize(35, 35)
-			texture[i]:SetRelativeWidth(0.6)
-			texture[i]:SetImage(adr.itemTexture)
-			texture[i]:SetLabel(adr.itemTooltip)
-			
-			texture[i]:SetCallback("OnClick", 
-			function()
-				if UnitIsGroupLeader("player") then
-					SendChatMessage(adr.itemTooltip, "RAID")
-				else
-					SendChatMessage(adr.itemTooltip, "PARTY")
-				end
-			end)
-			container:AddChild(texture[i])
-			
-			editbox[i] = GUI:Create("EditBox")
-			editbox[i]:SetWidth(150)
-			editbox[i]:SetRelativeWidth(0.4)
-			editbox[i]:SetLabel("낙찰가: "..comma_value(adr.price).." ")
-			editbox[i]:SetCallback("OnEnterPressed", 
-			function(widget, event, text)
-				if tonumber(text) == nil then
-					return
-				end
-				if UnitIsGroupLeader("player") then
-					SendChatMessage(adr.itemTooltip.." 가격 설정 : "..comma_value(text), "RAID")
-				else
-					HRGT:Print(adr.itemTooltip.." 가격 설정 : "..comma_value(text))
-				end
-				adr.price = text
-				UpdatePrice(named)
-			end)
-			container:AddChild(editbox[i])
-			i = i + 1
-		end
-		local refresh = GUI:Create("Button")
-		refresh:SetText("↻")
-		refresh:SetWidth(50)
-		container:AddChild(refresh)
-		refresh:SetCallback("OnClick",
-		function(widget)
-			UpdateRemotePanel(named, container, headertex)
+			adr.price = text
+			HRGT:UpdatePrice(named)
+			HRGT:statistics(statistics_container)
 		end)
+		container:AddChild(editbox[i])
+		i = i + 1
 	end
+	local refresh = GUI:Create("Button")
+	refresh:SetText("↻")
+	refresh:SetWidth(50)
+	container:AddChild(refresh)
+	refresh:SetCallback("OnClick",
+	function(widget)
+		HRGT:UpdateRemotePanel(named, container, headertex)
+	end)
+end
+
+function HRGT:RemotePanel()
+texture = {}
+editbox = {}
 	
 	local function SelectGroup(container, event, group)
 		if group == "tab1" then
-			UpdateRemotePanel("named1", container, "1넴 : 에라노그")
+			HRGT:UpdateRemotePanel("named1", container, "1넴 : 에라노그")
 		elseif group == "tab2" then
-			UpdateRemotePanel("named2", container, "2넴 : 테로스")
+			HRGT:UpdateRemotePanel("named2", container, "2넴 : 테로스")
 		elseif group == "tab3" then
-			UpdateRemotePanel("named3", container, "3넴 : 원시 의회")
+			HRGT:UpdateRemotePanel("named3", container, "3넴 : 원시 의회")
 		elseif group == "tab4" then
-			UpdateRemotePanel("named4", container, "4넴 : 세나스")
+			HRGT:UpdateRemotePanel("named4", container, "4넴 : 세나스")
 		elseif group == "tab5" then
-			UpdateRemotePanel("named5", container, "5넴 : 다테아")
+			HRGT:UpdateRemotePanel("named5", container, "5넴 : 다테아")
 		elseif group == "tab6" then
-			UpdateRemotePanel("named6", container, "6넴 : 그림토템")
+			HRGT:UpdateRemotePanel("named6", container, "6넴 : 그림토템")
 		elseif group == "tab7" then
-			UpdateRemotePanel("named7", container, "7넴 : 디우르나")
+			HRGT:UpdateRemotePanel("named7", container, "7넴 : 디우르나")
 		elseif group == "tab8" then
-			UpdateRemotePanel("named8", container, "8넴 : 라자게스")
+			HRGT:UpdateRemotePanel("named8", container, "8넴 : 라자게스")
 		end
 	end
 
@@ -375,10 +378,7 @@ function HRGT:SlashCommand(msg)
 	end
 end
 
-
 function HRGT:OnInitialize()
-	self:Print("HRGT Init")
-
 	self:RegisterChatCommand("HRGT", "SlashCommand")
 	self:RegisterChatCommand("hrgt", "SlashCommand")
 
@@ -443,7 +443,7 @@ function HRGT:newDB(named, itemName, itemLink, itemTooltip, itemTexture)
 	}
 end
 
-function HRGT:LOOT_HISTORY_AUTO_SHOW(test1, index, test2)
+function HRGT:LOOT_HISTORY_AUTO_SHOW()
 	local _, itemTooltip = C_LootHistory.GetItem(1)
 	if itemTooltip == nil then
 		return
@@ -454,6 +454,7 @@ function HRGT:LOOT_HISTORY_AUTO_SHOW(test1, index, test2)
 		return
 	else
 		HRGT:newDB(named, itemName, itemLink, itemTooltip, itemTexture)
+		HRGT:UpdateRemotePanel(remoteinfo.named, remoteinfo.container, remoteinfo.headertex)
 	end
 end
 
@@ -468,8 +469,14 @@ end
 end
 ]]
 
-function HRGT:RAID_INSTANCE_WELCOME(mapname)
-	if mapname == "현신의 금고(일반)" or mapname == "현신의 금고(영웅)" or mapname == "현신의 금고(신화)" then
+function HRGT:BOSS_KILL()
+	headcount = GetNumGroupMembers()
+end
+
+function HRGT:RAID_INSTANCE_WELCOME()
+	local mapname = GetInstanceInfo()
+	HRGT:Print(mapname.." 입장")
+	if mapname == "현신의 금고" then
 		StaticPopupDialogs["resetPopup_INS"] = {
 			text = "HRGT : 모든 데이터를 초기화합니다",
 			button1 = "Yes",
@@ -496,6 +503,7 @@ function HRGT:OnEnable()
 	self:RegisterEvent("TRADE_PLAYER_ITEM_CHANGED")
 	self:RegisterEvent("UI_INFO_MESSAGE")
 	self:RegisterEvent("PLAYER_MONEY")
+	self:RegisterEvent("BOSS_KILL")
 	
 end
 

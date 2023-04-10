@@ -4,6 +4,9 @@ local money_temp = 0
 local flag = nil
 
 function HRGT:checkDroptable(itemName)
+	if itemName == nil then
+		return nil
+	end
 	local named1 = {
 		194299,
 		195475,
@@ -216,16 +219,21 @@ function HRGT:PLAYER_MONEY()
 				temp.serverTime = time_H..":"..time_M
 				temp.targetName = targetName
 				temp.price = (tonumber(GetMoney()) - money_temp) / 100 / 100
-				local itemName = GetItemInfo(playerSlot[i])
-				self.db.char[named][itemName]["price"] = temp.price
+				local itemName
+				if playerSlot[i] ~= nil then
+					itemName = GetItemInfo(playerSlot[i])
+					self.db.char[named][itemName]["price"] = temp.price
+				end
 				temp.itemLink[i] = playerSlot[i]
 			end
 		end
 		flag = nil
+		HRGT:TradeHistory(trade_container)
 	end
 end
 
 function HRGT:TradeHistory(container)
+	trade_container = container
 	function AddText(scroll, serverTime, targetName, itemLink, price)
 		local blink = GUI:Create("Label")
 		blink:SetWidth(550)

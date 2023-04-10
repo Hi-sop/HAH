@@ -11,3 +11,4 @@ HRGT.xml
 
 Core.lua
 TradeHistory.lua
+
