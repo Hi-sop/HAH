@@ -233,6 +233,7 @@ end
 
 function HRGT:TradeHistory(container)
 	trade_container = container
+	
 	function AddText(scroll, serverTime, targetName, itemLink, price)
 		local blink = GUI:Create("Label")
 		blink:SetWidth(550)
@@ -283,7 +284,7 @@ function HRGT:TradeHistory(container)
 		scroll:AddChild(box4)
 	end
 	
-	container:ReleaseChildren()
+	trade_container:ReleaseChildren()
 	
 	local scrollcontainer = GUI:Create("SimpleGroup")
 	scrollcontainer:SetFullWidth(true)
