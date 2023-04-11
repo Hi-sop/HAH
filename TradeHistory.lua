@@ -3,7 +3,7 @@ local targetName
 local money_temp = 0
 local flag = nil
 
-function HRGT:checkDroptable(itemName)
+function HAH:checkDroptable(itemName)
 	if itemName == nil then
 		return nil
 	end
@@ -173,7 +173,7 @@ function HRGT:checkDroptable(itemName)
 	return nil
 end
 
-function HRGT:TRADE_SHOW()
+function HAH:TRADE_SHOW()
 	targetName = UnitName("NPC")
 	money_temp = tonumber(GetMoney())
 	for i = 1, 6 do
@@ -181,7 +181,7 @@ function HRGT:TRADE_SHOW()
 	end
 end
 
-function HRGT:TRADE_PLAYER_ITEM_CHANGED(_, index)
+function HAH:TRADE_PLAYER_ITEM_CHANGED(_, index)
 	if 6 < index then
 		return
 	end
@@ -189,13 +189,13 @@ function HRGT:TRADE_PLAYER_ITEM_CHANGED(_, index)
 	playerSlot[index] = itemName
 end
 
-function HRGT:UI_INFO_MESSAGE(_, code, msg)
+function HAH:UI_INFO_MESSAGE(_, code, msg)
 	if code == 242 and msg == "거래가 완료되었습니다." then
 		flag = true
 	end	
 end
 
-function HRGT:PLAYER_MONEY()
+function HAH:PLAYER_MONEY()
 	if flag == true then
 		local index = 1
 		for key, val in next, self.db.char.tradeHis, nil do
@@ -216,7 +216,7 @@ function HRGT:PLAYER_MONEY()
 		
 		local named = nil
 		for i = 1, 6 do
-			named = HRGT:checkDroptable(playerSlot[i])
+			named = HAH:checkDroptable(playerSlot[i])
 			if named ~= nil then
 				local itemName
 				if playerSlot[i] ~= nil then
@@ -227,11 +227,11 @@ function HRGT:PLAYER_MONEY()
 			end
 		end
 		flag = nil
-		HRGT:TradeHistory(trade_container)
+		HAH:TradeHistory(trade_container)
 	end
 end
 
-function HRGT:TradeHistory(container)
+function HAH:TradeHistory(container)
 	trade_container = container
 	
 	function AddText(scroll, serverTime, targetName, itemLink, price)
@@ -310,7 +310,7 @@ function HRGT:TradeHistory(container)
 	scroll:AddChild(refresh)
 	refresh:SetCallback("OnClick",
 	function(widget)
-		HRGT:TradeHistory(container)
+		HAH:TradeHistory(container)
 	end)
 	
 end
