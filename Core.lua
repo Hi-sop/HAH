@@ -379,6 +379,7 @@ function HRGT:SlashCommand(msg)
 end
 
 function HRGT:OnInitialize()
+	print("HRGT init")
 	self:RegisterChatCommand("HRGT", "SlashCommand")
 	self:RegisterChatCommand("hrgt", "SlashCommand")
 

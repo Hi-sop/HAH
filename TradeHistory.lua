@@ -196,8 +196,7 @@ function HRGT:UI_INFO_MESSAGE(_, code, msg)
 end
 
 function HRGT:PLAYER_MONEY()
-	if flag then
-
+	if flag == true then
 		local index = 1
 		for key, val in next, self.db.char.tradeHis, nil do
 			index = index + 1
@@ -211,14 +210,14 @@ function HRGT:PLAYER_MONEY()
 			time_M = "0"..time_M
 		end
 		
-		local named = nil
+		temp.serverTime = time_H..":"..time_M
+		temp.targetName = targetName
+		temp.price = (tonumber(GetMoney()) - money_temp) / 100 / 100
 		
+		local named = nil
 		for i = 1, 6 do
 			named = HRGT:checkDroptable(playerSlot[i])
 			if named ~= nil then
-				temp.serverTime = time_H..":"..time_M
-				temp.targetName = targetName
-				temp.price = (tonumber(GetMoney()) - money_temp) / 100 / 100
 				local itemName
 				if playerSlot[i] ~= nil then
 					itemName = GetItemInfo(playerSlot[i])
