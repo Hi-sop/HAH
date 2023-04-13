@@ -373,7 +373,7 @@ editbox = {}
 end
 
 function HAH:SlashCommand(msg)
-	if msg == "HAH" or msg == "HAH" then
+	if msg == "HAH" or msg == "hah" then
 		MainPanel:Show()
 	end
 end
@@ -391,8 +391,10 @@ function HAH:OnInitialize()
 		OnClick = 
 			function(clickedframe, button)
 				if button == "RightButton" then
+					HAH:UpdateRemotePanel(remoteinfo.named, remoteinfo.container, remoteinfo.headertex)
 					RemotePanel:Show()
 				else
+					HAH:statistics(statistics_container)
 					MainPanel:Show()
 				end
 			end,
