@@ -68,38 +68,44 @@ function HAH:statistics(container)
 	local header6 = GUI:Create("SFX-Header-II")
 	local header7 = GUI:Create("SFX-Header-II")
 	local header8 = GUI:Create("SFX-Header-II")
+	local header9 = GUI:Create("SFX-Header-II")
 
-	header1:SetText("1넴 : 에라노그")
+
+	header1:SetText("1. 카자라")
 	container:AddChild(header1)
 	HAH:calculator("named1", container)
 	
-	header2:SetText("2넴 : 테로스")
+	header2:SetText("2. 융합체")
 	container:AddChild(header2)
 	HAH:calculator("named2", container)
 	
-	header3:SetText("3넴 : 원시 의회")
+	header3:SetText("3. 잊힌 실험체")
 	container:AddChild(header3)
 	HAH:calculator("named3", container)
 	
-	header4:SetText("4넴 : 세나스")
+	header4:SetText("4. 자칼리")
 	container:AddChild(header4)
 	HAH:calculator("named4", container)
 	
-	header5:SetText("5넴 : 다테아")
+	header5:SetText("5. 라소크")
 	container:AddChild(header5)
 	HAH:calculator("named5", container)
 	
-	header6:SetText("6넴 : 그림토템")
+	header6:SetText("6. 지스카른")
 	container:AddChild(header6)
 	HAH:calculator("named6", container)
 	
-	header7:SetText("7넴 : 디우르나")
+	header7:SetText("7. 마그모락스")
 	container:AddChild(header7)
 	HAH:calculator("named7", container)
 	
-	header8:SetText("8넴 : 라자게스")
+	header8:SetText("8. 넬타리온")
 	container:AddChild(header8)
 	HAH:calculator("named8", container)
+	
+	header9:SetText("9. 사카레스")
+	container:AddChild(header9)
+	HAH:calculator("named9", container)
 	
 	local blink = GUI:Create("SFX-Header-II")
 	container:AddChild(blink)
@@ -126,10 +132,16 @@ function HAH:statistics(container)
 	container:AddChild(heacountbox)
 	
 	local allotment = GUI:Create("Label")
-	allotment:SetText("분배금 : "..comma_value(total / headcount))
+	allotment:SetText("1인당 분배금 : "..comma_value(total / headcount))
 	allotment:SetFont(STANDARD_TEXT_FONT, 16, "")
 	allotment:SetWidth(400)
 	container:AddChild(allotment)
+	
+	local allotment_party = GUI:Create("Label")
+	allotment_party:SetText("파티당(x5) : "..comma_value((total / headcount) * 5))
+	allotment_party:SetFont(STANDARD_TEXT_FONT, 16, "")
+	allotment_party:SetWidth(400)
+	container:AddChild(allotment_party)
 	
 	local refresh = GUI:Create("Button")
 	refresh:SetText("↻")
@@ -190,16 +202,18 @@ function HAH:MainPanel()
 					"1넴 : "..comma_value(gold["named1"]).." + ".."2넴 : "..comma_value(gold["named2"]).." + "..
 					"3넴 : "..comma_value(gold["named3"]).." + ".."4넴 : "..comma_value(gold["named4"]).." + "..
 					"5넴 : "..comma_value(gold["named5"]).." + ".."6넴 : "..comma_value(gold["named6"]).." + "..
-					"7넴 : "..comma_value(gold["named7"]).." + ".."8넴 : "..comma_value(gold["named8"]).." = "..comma_value(total), 
+					"7넴 : "..comma_value(gold["named7"]).." + ".."8넴 : "..comma_value(gold["named8"]).." + "..
+					"8넴 : "..comma_value(gold["named9"]).." = "..comma_value(total), 
 					"RAID")
 				SendChatMessage("총 "..comma_value(total).." / 분배인원 "..headcount.."명 = "..comma_value(total / headcount), "RAID")
 			else
 				SendChatMessage(
-				"1넴 : "..comma_value(gold["named1"]).." + ".."2넴 : "..comma_value(gold["named2"]).." + "..
-				"3넴 : "..comma_value(gold["named3"]).." + ".."4넴 : "..comma_value(gold["named4"]).." + "..
-				"5넴 : "..comma_value(gold["named5"]).." + ".."6넴 : "..comma_value(gold["named6"]).." + "..
-				"7넴 : "..comma_value(gold["named7"]).." + ".."8넴 : "..comma_value(gold["named8"]).." = "..comma_value(total), 
-				"PARTY")
+					"1넴 : "..comma_value(gold["named1"]).." + ".."2넴 : "..comma_value(gold["named2"]).." + "..
+					"3넴 : "..comma_value(gold["named3"]).." + ".."4넴 : "..comma_value(gold["named4"]).." + "..
+					"5넴 : "..comma_value(gold["named5"]).." + ".."6넴 : "..comma_value(gold["named6"]).." + "..
+					"7넴 : "..comma_value(gold["named7"]).." + ".."8넴 : "..comma_value(gold["named8"]).." + "..
+					"9넴 : "..comma_value(gold["named9"]).." = "..comma_value(total), 
+					"PARTY")
 				SendChatMessage("총 "..comma_value(total).." / 분배인원 "..headcount.."명 = "..comma_value(total / headcount), "PARTY")
 			end
 		end,
@@ -210,7 +224,7 @@ function HAH:MainPanel()
 
 	local MainPanel = GUI:Create("Window")
    	MainPanel:SetWidth(600)
-    MainPanel:SetHeight(700)
+    MainPanel:SetHeight(750)
 	MainPanel:SetTitle("HAH MainPanel")
 	MainPanel:SetCallback("OnClose",
 	function(widget) 
@@ -324,21 +338,23 @@ editbox = {}
 	
 	local function SelectGroup(container, event, group)
 		if group == "tab1" then
-			HAH:UpdateRemotePanel("named1", container, "1넴 : 에라노그")
+			HAH:UpdateRemotePanel("named1", container, "1넴 : 카자라")
 		elseif group == "tab2" then
-			HAH:UpdateRemotePanel("named2", container, "2넴 : 테로스")
+			HAH:UpdateRemotePanel("named2", container, "2넴 : 융합체")
 		elseif group == "tab3" then
-			HAH:UpdateRemotePanel("named3", container, "3넴 : 원시 의회")
+			HAH:UpdateRemotePanel("named3", container, "3넴 : 잊힌 실험체")
 		elseif group == "tab4" then
-			HAH:UpdateRemotePanel("named4", container, "4넴 : 세나스")
+			HAH:UpdateRemotePanel("named4", container, "4넴 : 자칼리")
 		elseif group == "tab5" then
-			HAH:UpdateRemotePanel("named5", container, "5넴 : 다테아")
+			HAH:UpdateRemotePanel("named5", container, "5넴 : 라소크")
 		elseif group == "tab6" then
-			HAH:UpdateRemotePanel("named6", container, "6넴 : 그림토템")
+			HAH:UpdateRemotePanel("named6", container, "6넴 : 지스카른")
 		elseif group == "tab7" then
-			HAH:UpdateRemotePanel("named7", container, "7넴 : 디우르나")
+			HAH:UpdateRemotePanel("named7", container, "7넴 : 마그모락스")
 		elseif group == "tab8" then
-			HAH:UpdateRemotePanel("named8", container, "8넴 : 라자게스")
+			HAH:UpdateRemotePanel("named8", container, "8넴 : 넬타리온")
+		elseif group == "tab9" then
+			HAH:UpdateRemotePanel("named9", container, "9넴 : 사카레스")
 		end
 	end
 
@@ -349,22 +365,25 @@ editbox = {}
 		RemotePanel:Hide()
 	end)
 	RemotePanel:SetWidth(360)
-	RemotePanel:SetHeight(550)
+	RemotePanel:SetHeight(570)
 	RemotePanel:EnableResize(false)
 	RemotePanel:SetLayout("Fill")
 	
 	local Tab = GUI:Create("TabGroup")
 	Tab:SetLayout("Flow")
-	Tab:SetTabs({
-		{text="에라노그", value="tab1"}, 
-		{text="테로스", value="tab2"},
-		{text="원시 의회", value="tab3"},
-		{text="세나스", value="tab4"},
-		{text="다테아", value="tab5"},
-		{text="그림토템", value="tab6"},
-		{text="디우르나", value="tab7"},
-		{text="라자게스", value="tab8"}
-		})
+	Tab:SetTabs(
+	{
+		{text="카자라", value="tab1"}, 
+		{text="융합체", value="tab2"},
+		{text="잊힌 실험체", value="tab3"},
+		{text="자칼리", value="tab4"},
+		{text="라소크", value="tab5"},
+		{text="지스카른", value="tab6"},
+		{text="마그모락스", value="tab7"},
+		{text="넬타리온", value="tab8"},
+		{text="사카레스", value="tab9"},
+	}
+	)
 	Tab:SetCallback("OnGroupSelected", SelectGroup)
 	Tab:SelectTab("tab1")
 
@@ -380,6 +399,7 @@ end
 
 function HAH:OnInitialize()
 	print("HAH init")
+	
 	self:RegisterChatCommand("HAH", "SlashCommand")
 	self:RegisterChatCommand("hah", "SlashCommand")
 
@@ -446,12 +466,16 @@ function HAH:newDB(named, itemName, itemLink, itemTooltip, itemTexture)
 	}
 end
 
-function HAH:LOOT_HISTORY_AUTO_SHOW()
-	local _, itemTooltip = C_LootHistory.GetItem(1)
+--[[
+function HAH:LOOT_ITEM_AVAILABLE(_, itemTooltip)
+	self:Print("LOOT_ITEM_AVAILABLE!"..itemTooltip)
+	
 	if itemTooltip == nil then
 		return
 	end
+	
 	local itemName, itemLink, _, itemLevel, _, _, _, _, _, itemTexture = GetItemInfo(itemTooltip)
+	
 	local named = HAH:checkDroptable(itemName)
 	if named == nil then
 		return
@@ -460,15 +484,43 @@ function HAH:LOOT_HISTORY_AUTO_SHOW()
 		HAH:UpdateRemotePanel(remoteinfo.named, remoteinfo.container, remoteinfo.headertex)
 	end
 end
+]]
+
+function HAH:CHAT_MSG_LOOT(_, msg)
+
+	local _, _, _, sp = strsplit(":", msg)
+	print(sp)
+	
+	if tonumber(sp) == nil then
+		return
+	end
+	
+	local itemName, itemTooltip, _, itemLevel, _, _, _, _, _, itemTexture = GetItemInfo(sp)
+	if itemName == nil then
+		return
+	end
+	
+	local named = HAH:checkDroptable(itemName)
+	if named == nil then
+		return
+	else
+		HAH:newDB(named, itemName, sp, itemTooltip, itemTexture)
+		HAH:UpdateRemotePanel(remoteinfo.named, remoteinfo.container, remoteinfo.headertex)
+	end
+	
+end
+
 
 --[[function HAH:ENCOUNTER_LOOT_RECEIVED(encounterID, itemID, _, quantity, playerName, className)
+	self:Print("ENCOUNTER!")
+	self:Print(itemID)
 	self:Print(quantity)
-	local _, itemID1 = strsplit(":", quantity)
-	self:Print(itemID1)
-	local itemName, itemLink, _, itemLevel, _, _, _, _, _, itemTexture = GetItemInfo(quantity)
+	--local _, itemID1 = strsplit(":", quantity)
+	--self:Print(itemID1)
+	--local itemName, itemLink, _, itemLevel, _, _, _, _, _, itemTexture = GetItemInfo(quantity)
 	
-	print("test new table create!")
-	HAH:newDB("test", itemName, itemID1, quantity, itemTexture)
+	--print("test new table create!")
+	--HAH:newDB("test", itemName, itemID1, quantity, itemTexture)
 end
 ]]
 
@@ -479,7 +531,7 @@ end
 function HAH:RAID_INSTANCE_WELCOME()
 	local mapname = GetInstanceInfo()
 	HAH:Print(mapname.." 입장")
-	if mapname == "현신의 금고" then
+	if mapname == "어둠의 도가니 아베루스" then
 		StaticPopupDialogs["resetPopup_INS"] = {
 			text = "HAH : 모든 데이터를 초기화합니다",
 			button1 = "Yes",
@@ -498,16 +550,17 @@ function HAH:RAID_INSTANCE_WELCOME()
 end
 
 function HAH:OnEnable()
-	self:RegisterEvent("LOOT_HISTORY_AUTO_SHOW")
-	self:RegisterEvent("RAID_INSTANCE_WELCOME")
 	--self:RegisterEvent("ENCOUNTER_LOOT_RECEIVED") --oldraid 등에서 동작. 테스트용
+	self:RegisterEvent("RAID_INSTANCE_WELCOME")
+	
+	--self:RegisterEvent("LOOT_ITEM_AVAILABLE")
+	self:RegisterEvent("CHAT_MSG_LOOT")
 	
 	self:RegisterEvent("TRADE_SHOW")
 	self:RegisterEvent("TRADE_PLAYER_ITEM_CHANGED")
 	self:RegisterEvent("UI_INFO_MESSAGE")
 	self:RegisterEvent("PLAYER_MONEY")
 	self:RegisterEvent("BOSS_KILL")
-	
 end
 
 function HAH:OnDisable() end
