@@ -49,7 +49,7 @@ function HAH:calculator(named, container)
 
 		frame:SetText(str)
 		frame:SetFont(STANDARD_TEXT_FONT, 14, "")
-		frame:SetWidth(400)
+		frame:SetWidth(650)
 		container:AddChild(frame)
 		gold[named] = temp
 		total = total + temp
@@ -223,7 +223,7 @@ function HAH:MainPanel()
 	}
 
 	local MainPanel = GUI:Create("Window")
-   	MainPanel:SetWidth(600)
+   	MainPanel:SetWidth(650)
     MainPanel:SetHeight(750)
 	MainPanel:SetTitle("HAH MainPanel")
 	MainPanel:SetCallback("OnClose",
@@ -489,7 +489,6 @@ end
 function HAH:CHAT_MSG_LOOT(_, msg)
 
 	local _, _, _, sp = strsplit(":", msg)
-	print(sp)
 	
 	if tonumber(sp) == nil then
 		return

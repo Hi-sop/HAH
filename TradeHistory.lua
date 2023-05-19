@@ -311,7 +311,9 @@ function HAH:TradeHistory(container)
 		scroll:AddChild(box4)
 	end
 	
-	trade_container:ReleaseChildren()
+	if trade_container ~= nil then
+		trade_container:ReleaseChildren()
+	end
 	
 	local scrollcontainer = GUI:Create("SimpleGroup")
 	scrollcontainer:SetFullWidth(true)
