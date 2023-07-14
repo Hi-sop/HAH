@@ -1,4 +1,45 @@
 ------------------------------------------------------------------------
+r1304 | nevcairiel | 2023-05-19 19:50:10 +0000 (Fri, 19 May 2023) | 1 line
+Changed paths:
+   M /trunk
+   M /trunk/AceDBOptions-3.0/AceDBOptions-3.0.lua
+
+AceDBOptions-3.0: Minor locale fixes for russian
+------------------------------------------------------------------------
+r1303 | nevcairiel | 2023-05-16 15:05:10 +0000 (Tue, 16 May 2023) | 3 lines
+Changed paths:
+   M /trunk
+   M /trunk/AceDBOptions-3.0/AceDBOptions-3.0.lua
+
+AceDBOptions-3.0: Update locale strings
+
+Fixes WoWAce #629
+------------------------------------------------------------------------
+r1302 | nevcairiel | 2023-05-03 07:00:09 +0000 (Wed, 03 May 2023) | 1 line
+Changed paths:
+   M /trunk
+   M /trunk/Ace3.toc
+
+Update TOC for 10.1
+------------------------------------------------------------------------
+r1301 | funkehdude | 2023-03-22 02:53:32 +0000 (Wed, 22 Mar 2023) | 1 line
+Changed paths:
+   M /trunk/Ace3.toc
+
+bump toc
+------------------------------------------------------------------------
+r1300 | funkehdude | 2023-01-28 00:06:37 +0000 (Sat, 28 Jan 2023) | 1 line
+Changed paths:
+   M /trunk/Ace3.toc
+
+bump toc
+------------------------------------------------------------------------
+r1299 | funkehdude | 2023-01-22 03:36:39 +0000 (Sun, 22 Jan 2023) | 1 line
+Changed paths:
+   M /trunk/Ace3_Wrath.toc
+
+bump toc
+------------------------------------------------------------------------
 r1298 | nevcairiel | 2022-12-12 15:10:10 +0000 (Mon, 12 Dec 2022) | 1 line
 Changed paths:
    M /trunk

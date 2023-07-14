@@ -1,5 +1,6 @@
-HAH = LibStub("AceAddon-3.0"):NewAddon("HAH", "AceConsole-3.0", "AceEvent-3.0")
+HAH = LibStub("AceAddon-3.0"):NewAddon("HAH", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0")
 GUI = LibStub("AceGUI-3.0")
+local mainTab
 
 local defaults = {
 	char = {
@@ -144,7 +145,7 @@ function HAH:statistics(container)
 	container:AddChild(allotment_party)
 	
 	local refresh = GUI:Create("Button")
-	refresh:SetText("↻")
+	refresh:SetText("RL")
 	refresh:SetWidth(50)
 	container:AddChild(refresh)
 	refresh:SetCallback("OnClick",
@@ -229,7 +230,9 @@ function HAH:MainPanel()
 	MainPanel:SetCallback("OnClose",
 	function(widget) 
 		MainPanel:Hide()
+		mainTab:SelectTab("tab1")
 	end)
+	
 	MainPanel:SetLayout("Fill")
 	MainPanel:EnableResize(false)
 	
@@ -242,6 +245,7 @@ function HAH:MainPanel()
 	end
 	
 	local Tab = GUI:Create("TabGroup")
+	mainTab = Tab
 	Tab:SetLayout("Flow")
 	Tab:SetTabs({
 		{text="통계", value="tab1"}, 
@@ -323,7 +327,7 @@ function HAH:UpdateRemotePanel(named, container, headertex)
 		i = i + 1
 	end
 	local refresh = GUI:Create("Button")
-	refresh:SetText("↻")
+	refresh:SetText("RL")
 	refresh:SetWidth(50)
 	container:AddChild(refresh)
 	refresh:SetCallback("OnClick",
@@ -391,10 +395,8 @@ editbox = {}
 	return RemotePanel
 end
 
-function HAH:SlashCommand(msg)
-	if msg == "HAH" or msg == "hah" then
-		MainPanel:Show()
-	end
+function HAH:SlashCommand()
+	MainPanel:Show()
 end
 
 function HAH:OnInitialize()
@@ -402,7 +404,6 @@ function HAH:OnInitialize()
 	
 	self:RegisterChatCommand("HAH", "SlashCommand")
 	self:RegisterChatCommand("hah", "SlashCommand")
-
 
 	self.db = LibStub("AceDB-3.0"):New("HAH_DB", defaults, true)
 	local MinimapIcon = LibStub("LibDataBroker-1.1"):NewDataObject("HAH_DB", 
@@ -431,8 +432,13 @@ function HAH:OnInitialize()
 	
 	MainPanel = HAH:MainPanel()
 	MainPanel:Hide()
+	_G["HAH_Main"] = MainPanel.frame
+	tinsert(UISpecialFrames, "HAH_Main")
+	
 	RemotePanel = HAH:RemotePanel()
 	RemotePanel:Hide()
+	_G["HAH_Remote"] = RemotePanel.frame
+	tinsert(UISpecialFrames, "HAH_Remote")
 end
 
 function HAH:newDB(named, itemName, itemLink, itemTooltip, itemTexture)
@@ -466,26 +472,6 @@ function HAH:newDB(named, itemName, itemLink, itemTooltip, itemTexture)
 	}
 end
 
---[[
-function HAH:LOOT_ITEM_AVAILABLE(_, itemTooltip)
-	self:Print("LOOT_ITEM_AVAILABLE!"..itemTooltip)
-	
-	if itemTooltip == nil then
-		return
-	end
-	
-	local itemName, itemLink, _, itemLevel, _, _, _, _, _, itemTexture = GetItemInfo(itemTooltip)
-	
-	local named = HAH:checkDroptable(itemName)
-	if named == nil then
-		return
-	else
-		HAH:newDB(named, itemName, itemLink, itemTooltip, itemTexture)
-		HAH:UpdateRemotePanel(remoteinfo.named, remoteinfo.container, remoteinfo.headertex)
-	end
-end
-]]
-
 function HAH:CHAT_MSG_LOOT(_, msg)
 
 	local _, _, _, sp = strsplit(":", msg)
@@ -508,20 +494,6 @@ function HAH:CHAT_MSG_LOOT(_, msg)
 	end
 	
 end
-
-
---[[function HAH:ENCOUNTER_LOOT_RECEIVED(encounterID, itemID, _, quantity, playerName, className)
-	self:Print("ENCOUNTER!")
-	self:Print(itemID)
-	self:Print(quantity)
-	--local _, itemID1 = strsplit(":", quantity)
-	--self:Print(itemID1)
-	--local itemName, itemLink, _, itemLevel, _, _, _, _, _, itemTexture = GetItemInfo(quantity)
-	
-	--print("test new table create!")
-	--HAH:newDB("test", itemName, itemID1, quantity, itemTexture)
-end
-]]
 
 function HAH:BOSS_KILL()
 	headcount = GetNumGroupMembers()
@@ -549,10 +521,8 @@ function HAH:RAID_INSTANCE_WELCOME()
 end
 
 function HAH:OnEnable()
-	--self:RegisterEvent("ENCOUNTER_LOOT_RECEIVED") --oldraid 등에서 동작. 테스트용
 	self:RegisterEvent("RAID_INSTANCE_WELCOME")
 	
-	--self:RegisterEvent("LOOT_ITEM_AVAILABLE")
 	self:RegisterEvent("CHAT_MSG_LOOT")
 	
 	self:RegisterEvent("TRADE_SHOW")

@@ -2,7 +2,7 @@ local playerSlot = {}
 local targetName
 local money_temp = 0
 local flag = nil
-local trade_container
+local trade_container = nil
 
 function HAH:checkDroptable(itemName)
 	if itemName == nil then
@@ -219,16 +219,75 @@ end
 function HAH:UI_INFO_MESSAGE(_, code, msg)
 	if code == 242 and msg == "거래가 완료되었습니다." then
 		flag = true
-	end	
+	end
+	self:ScheduleTimer("Resetflag", 3)
+end
+
+function HAH:Resetflag()
+	local itemflag = true
+	local named = nil
+	for i = 1, 6 do
+		named = HAH:checkDroptable(playerSlot[i])
+		if named ~= nil then
+			if itemflag then
+				itemflag = false
+			end
+		end
+	end
+	if itemflag then
+		return
+	end
+
+	local index = 1
+	for key, val in next, self.db.char.tradeHis, nil do
+		index = index + 1
+	end
+	local temp = self.db.char.tradeHis[index]
+	
+	for i = 1, 6 do
+		temp.itemLink[i] = playerSlot[i]
+	end
+	
+	local time_H, time_M = GetGameTime()
+	if time_H < 10 then
+		time_H = "0"..time_H
+	end
+	if time_M < 10 then
+		time_M = "0"..time_M
+	end
+	
+	temp.serverTime = time_H..":"..time_M
+	temp.targetName = targetName
+	temp.price = 0
+
+	flag = false
+	if trade_container ~= nil then
+		HAH:TradeHistory(trade_container)
+	end
 end
 
 function HAH:PLAYER_MONEY()
+	HAH:CancelAllTimers()
 	if flag == true then
 		local index = 1
 		for key, val in next, self.db.char.tradeHis, nil do
 			index = index + 1
 		end
 		local temp = self.db.char.tradeHis[index]
+		local named = nil
+		
+		for i = 1, 6 do
+			named = HAH:checkDroptable(playerSlot[i])
+			if named ~= nil then
+				local itemName
+				if playerSlot[i] ~= nil then
+					itemName = GetItemInfo(playerSlot[i])
+					self.db.char[named][itemName]["price"] = temp.price
+				end
+				temp.itemLink[i] = playerSlot[i]
+			end
+		end
+		
 		local time_H, time_M = GetGameTime()
 		if time_H < 10 then
 			time_H = "0"..time_H
@@ -241,20 +300,10 @@ function HAH:PLAYER_MONEY()
 		temp.targetName = targetName
 		temp.price = (tonumber(GetMoney()) - money_temp) / 100 / 100
 		
-		local named = nil
-		for i = 1, 6 do
-			named = HAH:checkDroptable(playerSlot[i])
-			if named ~= nil then
-				local itemName
-				if playerSlot[i] ~= nil then
-					itemName = GetItemInfo(playerSlot[i])
-					self.db.char[named][itemName]["price"] = temp.price
-				end
-				temp.itemLink[i] = playerSlot[i]
-			end
-		end
-		flag = nil
+		flag = false
+		if trade_container ~= nil then
 		HAH:TradeHistory(trade_container)
+		end
 	end
 end
 
@@ -334,7 +383,7 @@ function HAH:TradeHistory(container)
 	end
 	
 	local refresh = GUI:Create("Button")
-	refresh:SetText("↻")
+	refresh:SetText("RL")
 	refresh:SetWidth(50)
 	scroll:AddChild(refresh)
 	refresh:SetCallback("OnClick",

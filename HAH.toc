@@ -5,8 +5,6 @@
 ## Version: 1.0
 ## SavedVariablesPerCharacter: HAH_DB
 
-Libs\AceGUI-3.0_SFX-Widgets.xml
-Libs\embeds.xml
 HAH.xml
 
 Core.lua
